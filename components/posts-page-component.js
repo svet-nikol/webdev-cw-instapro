@@ -2,6 +2,8 @@ import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
 
+export let userId;
+
 export function renderPostsPageComponent({ appEl, posts }) {
 
   const postsHTML = posts
@@ -61,8 +63,9 @@ export function renderPostsPageComponent({ appEl, posts }) {
 
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", () => {
+      userId = userEl.dataset.userId;
       goToPage(USER_POSTS_PAGE, {
-        userId: userEl.dataset.userId,
+        userId : userId,
       });
     });
   }
