@@ -1,9 +1,18 @@
 import { renderHeaderComponent } from "./header-component.js";
 import { renderUploadImageComponent } from "./upload-image-component.js";
+import { addPostApi } from "../api.js";
+import { goToPage } from "../index.js";
+import { POSTS_PAGE } from "../routes.js";
 
-export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
-  const render = () => {
-    // TODO: Реализовать страницу добавления поста
+export function renderAddPostPageComponent({
+  appEl,
+  token,
+  // getToken
+}) {
+  let imageUrl = "";
+
+  const renderAddPostForm = () => {
+    // DONE: Реализовать страницу добавления поста
     const appHtml = `
     <div class="page-container">
       <div class="header-container"></div>
@@ -20,8 +29,11 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
               </div>
               <label>
                 Опишите фотографию:
-                <textarea class="input textarea" rows="4"></textarea>
+                <textarea class="input textarea" id="description-input" rows="4"></textarea>
               </label>
+
+              <div class="form-error"></div>
+              
               <button class="button" id="add-button">Добавить</button>
             </div>
       </div>
@@ -29,13 +41,6 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
 `;
 
     appEl.innerHTML = appHtml;
-
-
-    // из auth-page-component setError и renderHeaderComponent !!! Не вызываем перерендер, чтобы не сбрасывалась заполненная форма
-    // Точечно обновляем кусочек дом дерева
-    // const setError = (message) => {
-    //   appEl.querySelector(".form-error").textContent = message;
-    // };
 
     renderHeaderComponent({
       element: document.querySelector(".header-container"),
@@ -51,15 +56,45 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
         },
       });
     }
-    
-    
+
+    function onAddPostClick() {
+      // из auth-page-component setError и renderHeaderComponent !!! Не вызываем перерендер, чтобы не сбрасывалась заполненная форма
+      // Точечно обновляем кусочек дом дерева
+      const setError = (message) => {
+        appEl.querySelector(".form-error").textContent = message;
+      };
+      setError("");
+
+      const description = document.getElementById("description-input").value;
+
+      if (!description) {
+        alert("Введите описание");
+        return;
+      }
+      if (!imageUrl) {
+        alert("Не выбрана фотография");
+        return;
+      }
+      else {
+        addPostApi({
+          description: description,
+          imageUrl,
+          token,
+        })
+        .then(() => {
+          goToPage(POSTS_PAGE)
+        })
+        .catch((error) => {
+        console.warn(error);
+        setError(error.message);
+        });
+      }
+    }
+
     document.getElementById("add-button").addEventListener("click", () => {
-      onAddPostClick({
-        description: "Описание картинки",
-        imageUrl: "https://image.png",
-      });
+      onAddPostClick();
     });
   };
 
-  render();
+  renderAddPostForm();
 }

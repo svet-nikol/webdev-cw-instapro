@@ -1,6 +1,6 @@
 // Замени на свой, чтобы получить независимый от других набор данных.
 // "боевая" версия инстапро лежит в ключе prod
-const personalKey = "prod";
+const personalKey = ":sveta-plaksina"; // :sveta-plaksina    prod
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
 
@@ -65,6 +65,28 @@ export function uploadImage({ file }) {
     method: "POST",
     body: data,
   }).then((response) => {
+    return response.json();
+  });
+}
+
+export function addPostApi({ description, imageUrl, token }) {
+  return fetch(postsHost, {
+    method: "POST",
+    body: JSON.stringify({
+      description: description,
+        // .replaceAll("&", "&amp;")
+        // .replaceAll("<", "&lt;")
+        // .replaceAll(">", "&gt;")
+        // .replaceAll('"', "&quot;"),
+      imageUrl,
+    }),
+    headers: {
+      Authorization: token,
+    },
+  }).then((response) => {
+    if (response.status === 400) {
+      throw new Error("Не прекреплена фотография или не заполнено описание");
+    }
     return response.json();
   });
 }
