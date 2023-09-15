@@ -22,6 +22,7 @@ export let posts = [];
 
 const getToken = () => {
   const token = user ? `Bearer ${user.token}` : undefined;
+  console.log(user, token);
   return token;
 };
 
@@ -71,8 +72,8 @@ export const goToPage = (newPage, data) => {
         // DONE: реализовать получение постов юзера из API
         page = LOADING_PAGE;
         renderApp();
-        
-        return getUserPosts({ userId })
+
+        return getUserPosts({ token: getToken(), userId })
           .then((newPosts) => {
             page = USER_POSTS_PAGE;
             posts = newPosts;
