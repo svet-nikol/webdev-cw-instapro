@@ -30,15 +30,31 @@ export function getUserPosts({ token, userId }) {
       Authorization: token,
     },
   })
-  .then((response) => {
-    // if (response.status === 401) {
-    //   throw new Error("Нет авторизации");
-    // }
-    return response.json();
+    .then((response) => {
+      // if (response.status === 401) {
+      //   throw new Error("Нет авторизации");
+      // }
+      return response.json();
+    })
+    .then((data) => {
+      return data.posts;
+    });
+}
+
+export function switchLikeApi({ token, postId, likedMode }) {
+  const likesHost = `${postsHost}/${postId}/${likedMode ? "dislike" : "like"}`
+  return fetch(likesHost, {
+    method: "POST",
+    headers: {
+      Authorization: token,
+    },
   })
-  .then((data) => {
-    return data.posts;
-  });
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      return data.post;
+    });
 }
 
 // https://github.com/GlebkaF/webdev-hw-api/blob/main/pages/api/user/README.md#%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F
@@ -92,10 +108,10 @@ export function addPostApi({ description, imageUrl, token }) {
     method: "POST",
     body: JSON.stringify({
       description: description,
-        // .replaceAll("&", "&amp;")
-        // .replaceAll("<", "&lt;")
-        // .replaceAll(">", "&gt;")
-        // .replaceAll('"', "&quot;"),
+      // .replaceAll("&", "&amp;")
+      // .replaceAll("<", "&lt;")
+      // .replaceAll(">", "&gt;")
+      // .replaceAll('"', "&quot;"),
       imageUrl,
     }),
     headers: {

@@ -22,7 +22,7 @@ export let posts = [];
 
 const getToken = () => {
   const token = user ? `Bearer ${user.token}` : undefined;
-  console.log(user, token);
+  console.log(user);
   return token;
 };
 
@@ -94,7 +94,7 @@ export const goToPage = (newPage, data) => {
   throw new Error("страницы не существует");
 };
 
-const renderApp = () => {
+export const renderApp = () => {
   const appEl = document.getElementById("app");
   if (page === LOADING_PAGE) {
     return renderLoadingPageComponent({
@@ -129,6 +129,8 @@ const renderApp = () => {
     return renderPostsPageComponent({
       appEl,
       posts,
+      token: getToken(),
+      user,
     });
   }
 
@@ -137,6 +139,8 @@ const renderApp = () => {
     return renderPostsPageComponent({
       appEl,
       posts,
+      token: getToken(),
+      user,
     });
   }
 };

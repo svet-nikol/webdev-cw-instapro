@@ -7,7 +7,6 @@ import { POSTS_PAGE } from "../routes.js";
 export function renderAddPostPageComponent({
   appEl,
   token,
-  // getToken
 }) {
   let imageUrl = "";
 

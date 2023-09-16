@@ -1,19 +1,20 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, renderApp } from "../index.js";
+import { switchLikeApi } from "../api.js";
 
-export let userId;
+export let userId; // для страницы постов выбранного юзера
+export let postId; // для лайков
 
-export function renderPostsPageComponent({ appEl, posts }) {
-
+export function renderPostsPageComponent({ appEl, posts, token, user }) {
   const postsHTML = posts
     .map((post) => {
-      let likesText = '';
+      let likesText = "";
       if (post.likes.length > 1) {
         likesText = ` и еще ${post.likes.length - 1}`;
       }
       return `
-      <li class="post">
+      <li data-item-id="${post.id}" class="post">
       <div class="post-header" data-user-id="${post.user.id}">
           <img src="${post.user.imageUrl}" class="post-header__user-image">
           <p class="post-header__user-name">${post.user.name}</p>
@@ -23,10 +24,16 @@ export function renderPostsPageComponent({ appEl, posts }) {
       </div>
       <div class="post-likes">
         <button data-post-id="${post.id}" class="like-button">
-          <img src=${post.isLiked ? "./assets/images/like-active.svg" : "./assets/images/like-not-active.svg"}>
+          <img class="img-likes" src=${
+            post.isLiked
+              ? "./assets/images/like-active.svg"
+              : "./assets/images/like-not-active.svg"
+          }>
         </button>
         <p class="post-likes-text">
-          Нравится: <strong>${post.likes.length === 0 ? post.likes.length : post.likes[0].name}${likesText}</strong>
+          Нравится: <strong>${
+            post.likes.length === 0 ? post.likes.length : post.likes[0].name
+          }${likesText}</strong>
         </p>
       </div>
       <p class="post-text">
@@ -41,14 +48,14 @@ export function renderPostsPageComponent({ appEl, posts }) {
     })
     .join("");
 
-    const appHtml = `
+  const appHtml = `
               <div class="page-container">
                 <div class="header-container"></div>
                 <ul class="posts">${postsHTML}
                 </ul>
-              </div>`; 
+              </div>`;
   // DONE: реализовать рендер постов из api
-  console.log("Актуальный список постов:", posts);
+  // console.log("Актуальный список постов:", posts);
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
@@ -65,8 +72,70 @@ export function renderPostsPageComponent({ appEl, posts }) {
     userEl.addEventListener("click", () => {
       userId = userEl.dataset.userId;
       goToPage(USER_POSTS_PAGE, {
-        userId : userId,
+        userId: userId,
       });
     });
+  }
+
+  for (let likeButtonEl of document.querySelectorAll(".like-button")) {
+    let likedMode = false; // false по умолчанию, лайкнут пост авторизованным пользователем
+    let loginUserId = user ? user._id : null; // id авторизованного в приложении юзера
+
+    if (loginUserId !== null) {
+      likeButtonEl.addEventListener("click", () => {
+        postId = likeButtonEl.dataset.postId;
+
+        const foundPost = posts.find((post) => post.id === postId);
+
+        if (foundPost) {
+          likedMode = foundPost.likes.some((like) => like.id === loginUserId);
+        }
+
+        switchLikeApi({ token, postId, likedMode })
+          .then((postFromApi) => {
+            const postIndex = posts.findIndex(
+              (post) => post.id === postFromApi.id
+            );
+            if (postIndex !== -1) {
+              posts[postIndex] = postFromApi;
+              let likesText = "";
+              if (postFromApi.likes.length > 1) {
+                likesText = ` и еще ${postFromApi.likes.length - 1}`;
+              }
+              const updatePostEl = document.querySelector(
+                `[data-item-id="${postFromApi.id}"]`
+              );
+
+              updatePostEl.querySelector(
+                ".like-button"
+              ).innerHTML = `
+              <img class="img-likes" src=${
+                postFromApi.isLiked
+                  ? "./assets/images/like-active.svg"
+                  : "./assets/images/like-not-active.svg"
+              }>`;
+              updatePostEl.querySelector(
+                ".post-likes-text"
+              ).innerHTML = `
+            Нравится: <strong>${
+              postFromApi.likes.length === 0
+                ? postFromApi.likes.length
+                : postFromApi.likes[0].name
+            }${likesText}</strong>
+            `;
+            }
+          })
+          .catch((error) => {
+            console.warn(error);
+          });
+
+
+      });
+    } else {
+      likeButtonEl.addEventListener("click", () => {
+        alert("Пройдите авторизацию");
+        return;
+      });
+    }
   }
 }
