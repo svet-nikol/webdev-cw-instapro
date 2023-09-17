@@ -15,7 +15,6 @@ export function getPosts({ token }) {
       if (response.status === 401) {
         throw new Error("Нет авторизации");
       }
-
       return response.json();
     })
     .then((data) => {
@@ -31,9 +30,6 @@ export function getUserPosts({ token, userId }) {
     },
   })
     .then((response) => {
-      // if (response.status === 401) {
-      //   throw new Error("Нет авторизации");
-      // }
       return response.json();
     })
     .then((data) => {
@@ -42,7 +38,7 @@ export function getUserPosts({ token, userId }) {
 }
 
 export function switchLikeApi({ token, postId, likedMode }) {
-  const likesHost = `${postsHost}/${postId}/${likedMode ? "dislike" : "like"}`
+  const likesHost = `${postsHost}/${postId}/${likedMode ? "dislike" : "like"}`;
   return fetch(likesHost, {
     method: "POST",
     headers: {
@@ -121,6 +117,17 @@ export function addPostApi({ description, imageUrl, token }) {
     if (response.status === 400) {
       throw new Error("Не прекреплена фотография или не заполнено описание");
     }
+    return response.json();
+  });
+}
+
+export function deletePostApi({ token, postId }) {
+  return fetch(postsHost + "/" + postId, {
+    method: "DELETE",
+    headers: {
+      Authorization: token,
+    },
+  }).then((response) => {
     return response.json();
   });
 }

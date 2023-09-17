@@ -1,7 +1,7 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
-import { switchLikeApi } from "../api.js";
+import { switchLikeApi, deletePostApi } from "../api.js";
 
 export let userId; // для страницы постов выбранного юзера
 export let postId; // для лайков
@@ -15,14 +15,18 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
       }
       return `
       <li data-item-id="${post.id}" class="post">
-        <div class="post-header" data-user-id="${post.user.id}">
+        <div class="post-header">
 
-          <div class="post-header-user">
+          <div class="post-header-user" data-user-id="${post.user.id}">
             <img src="${post.user.imageUrl}" class="post-header__user-image">
             <p class="post-header__user-name">${post.user.name}</p>
           </div>
 
-          <button class="delete-button" ${user !== null && user._id === post.user.id ? `style="display: block"` : `style="display: none"`}> 
+          <button data-post-id="${post.id}" class="delete-button" ${
+            user !== null && user._id === post.user.id
+              ? `style="display: block"`
+              : `style="display: none"`
+          }>
             <img class="img-trash" src="./assets/images/trash3.svg">
           </button>
 
@@ -59,10 +63,6 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
     })
     .join("");
 
-    // <button class="delete-button" ${user !== null && post.user.id === user._id ? `style="display: none"` : ""}> 
-    // <img class="img-trash" src="./assets/images/trash3.svg">
-    // </button>
-
   const appHtml = `
               <div class="page-container">
                 <div class="header-container"></div>
@@ -70,7 +70,6 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
                 </ul>
               </div>`;
   // DONE: реализовать рендер постов из api
-  console.log("Актуальный список постов:", posts);
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
@@ -83,7 +82,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
     element: document.querySelector(".header-container"),
   });
 
-  for (let userEl of document.querySelectorAll(".post-header")) {
+  for (let userEl of document.querySelectorAll(".post-header-user")) {
     userEl.addEventListener("click", () => {
       userId = userEl.dataset.userId;
       goToPage(USER_POSTS_PAGE, {
@@ -147,5 +146,21 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
         return;
       });
     }
+  }
+
+  for (const deleteButtonEl of document.querySelectorAll(".delete-button")) {
+    deleteButtonEl.addEventListener("click", () => {
+      postId = deleteButtonEl.dataset.postId;
+      const confirmation = confirm("Хотите удалить пост?");
+      if (confirmation) {
+        deletePostApi({ token, postId })
+          .then(() => {
+            goToPage(POSTS_PAGE);
+          })
+          .catch((error) => {
+            console.warn(error);
+          });
+      }
+    });
   }
 }
