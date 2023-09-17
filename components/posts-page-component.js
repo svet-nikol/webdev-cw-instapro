@@ -15,38 +15,51 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
       }
       return `
       <li data-item-id="${post.id}" class="post">
-      <div class="post-header" data-user-id="${post.user.id}">
-          <img src="${post.user.imageUrl}" class="post-header__user-image">
-          <p class="post-header__user-name">${post.user.name}</p>
-      </div>
-      <div class="post-image-container">
-        <img class="post-image" src="${post.imageUrl}">
-      </div>
-      <div class="post-likes">
-        <button data-post-id="${post.id}" class="like-button">
-          <img class="img-likes" src=${
-            post.isLiked
-              ? "./assets/images/like-active.svg"
-              : "./assets/images/like-not-active.svg"
-          }>
-        </button>
-        <p class="post-likes-text">
-          Нравится: <strong>${
-            post.likes.length === 0 ? post.likes.length : post.likes[0].name
-          }${likesText}</strong>
+        <div class="post-header" data-user-id="${post.user.id}">
+
+          <div class="post-header-user">
+            <img src="${post.user.imageUrl}" class="post-header__user-image">
+            <p class="post-header__user-name">${post.user.name}</p>
+          </div>
+
+          <button class="delete-button" ${post.user.id !== user._id ? `style="display: none"` : ""}> 
+            <img class="img-trash" src="./assets/images/trash3.svg">
+          </button>
+
+        </div>
+
+        <div class="post-image-container">
+          <img class="post-image" src="${post.imageUrl}">
+        </div>
+
+        <div class="post-likes">
+          <button data-post-id="${post.id}" class="like-button">
+            <img class="img-likes" src=${
+              post.isLiked
+                ? "./assets/images/like-active.svg"
+                : "./assets/images/like-not-active.svg"
+            }>
+          </button>
+          <p class="post-likes-text">
+            Нравится: <strong>${
+              post.likes.length === 0 ? post.likes.length : post.likes[0].name
+            }${likesText}</strong>
+          </p>
+        </div>
+        
+        <p class="post-text">
+          <span class="user-name">${post.user.name}</span>
+          ${post.description}
         </p>
-      </div>
-      <p class="post-text">
-        <span class="user-name">${post.user.name}</span>
-        ${post.description}
-      </p>
-      <p class="post-date">
-      ${post.createdAt}
-      </p>
+        <p class="post-date">
+        ${post.createdAt}
+        </p>
       </li>
       `;
     })
     .join("");
+
+    //${post.user.id !== user._id ? "
 
   const appHtml = `
               <div class="page-container">
@@ -55,7 +68,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
                 </ul>
               </div>`;
   // DONE: реализовать рендер постов из api
-  // console.log("Актуальный список постов:", posts);
+  console.log("Актуальный список постов:", posts);
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"

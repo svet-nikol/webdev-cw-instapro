@@ -61,7 +61,14 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
+  justify-content: space-between;
   cursor: pointer;
+}
+
+.post-header-user {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .post-header__user-image {
@@ -71,6 +78,23 @@
   border-radius: 40px;
   margin-right: 10px;
 }
+
+.delete-button {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-color: #F5F5F5;
+}
+
+.img-trash {
+  width: 25px;
+  height: 25px;
+}
+
 
 .post-image-container {
   margin-left: -20px;
