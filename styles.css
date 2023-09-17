@@ -12,6 +12,14 @@
   margin-right: -20px;
 }
 
+.page-header__user-image {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 30px;
+  margin-right: 10px;
+}
+
 .logo {
   margin: 0;
   font-size: 28px;
@@ -35,7 +43,9 @@
 
 .logout-button {
   width: 130px;
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .posts {

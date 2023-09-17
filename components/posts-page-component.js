@@ -1,6 +1,6 @@
-import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage, renderApp } from "../index.js";
+import { posts, goToPage } from "../index.js";
 import { switchLikeApi } from "../api.js";
 
 export let userId; // для страницы постов выбранного юзера
@@ -98,6 +98,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
             );
             if (postIndex !== -1) {
               posts[postIndex] = postFromApi;
+
               let likesText = "";
               if (postFromApi.likes.length > 1) {
                 likesText = ` и еще ${postFromApi.likes.length - 1}`;
@@ -106,17 +107,13 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
                 `[data-item-id="${postFromApi.id}"]`
               );
 
-              updatePostEl.querySelector(
-                ".like-button"
-              ).innerHTML = `
-              <img class="img-likes" src=${
-                postFromApi.isLiked
-                  ? "./assets/images/like-active.svg"
-                  : "./assets/images/like-not-active.svg"
-              }>`;
-              updatePostEl.querySelector(
-                ".post-likes-text"
-              ).innerHTML = `
+              updatePostEl.querySelector(".like-button").innerHTML = `
+            <img class="img-likes" src=${
+              postFromApi.isLiked
+                ? "./assets/images/like-active.svg"
+                : "./assets/images/like-not-active.svg"
+            }>`;
+              updatePostEl.querySelector(".post-likes-text").innerHTML = `
             Нравится: <strong>${
               postFromApi.likes.length === 0
                 ? postFromApi.likes.length
@@ -128,8 +125,6 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
           .catch((error) => {
             console.warn(error);
           });
-
-
       });
     } else {
       likeButtonEl.addEventListener("click", () => {
