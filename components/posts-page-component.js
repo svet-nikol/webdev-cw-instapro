@@ -22,7 +22,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
             <p class="post-header__user-name">${post.user.name}</p>
           </div>
 
-          <button class="delete-button" ${post.user.id !== user._id ? `style="display: none"` : ""}> 
+          <button class="delete-button" ${user !== null && user._id === post.user.id ? `style="display: block"` : `style="display: none"`}> 
             <img class="img-trash" src="./assets/images/trash3.svg">
           </button>
 
@@ -59,7 +59,9 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
     })
     .join("");
 
-    //${post.user.id !== user._id ? "
+    // <button class="delete-button" ${user !== null && post.user.id === user._id ? `style="display: none"` : ""}> 
+    // <img class="img-trash" src="./assets/images/trash3.svg">
+    // </button>
 
   const appHtml = `
               <div class="page-container">
