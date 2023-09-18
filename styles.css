@@ -92,14 +92,13 @@
   border: none;
   cursor: pointer;
   box-sizing: border-box;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 .img-trash {
   width: 25px;
   height: 25px;
 }
-
 
 .post-image-container {
   margin-left: -20px;

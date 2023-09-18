@@ -1,10 +1,17 @@
 import { loginUser, registerUser } from "../api.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { renderUploadImageComponent } from "./upload-image-component.js";
+import sanitizeHtml from "sanitize-html";
 
 export function renderAuthPageComponent({ appEl, setUser }) {
   let isLoginMode = true;
   let imageUrl = "";
+  function getSanitizeInput(inputValue) {
+    return sanitizeHtml(inputValue, {
+      allowedTags: [],
+      allowedAttributes: [],
+    });
+  }
 
   const renderForm = () => {
     const appHtml = `
@@ -127,9 +134,9 @@ export function renderAuthPageComponent({ appEl, setUser }) {
         }
 
         registerUser({
-          login: login,
+          login: getSanitizeInput(login),
           password: password,
-          name: name,
+          name: getSanitizeInput(name),
           imageUrl,
         })
           .then((user) => {

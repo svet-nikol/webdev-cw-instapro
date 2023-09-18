@@ -2,6 +2,7 @@ import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
 import { switchLikeApi, deletePostApi } from "../api.js";
+import { formatDistanceToNow } from "date-fns";
 
 export let userId; // для страницы постов выбранного юзера
 export let postId; // для лайков
@@ -13,6 +14,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
       if (post.likes.length > 1) {
         likesText = ` и еще ${post.likes.length - 1}`;
       }
+      const commentTime = formatDistanceToNow(new Date(post.createdAt));
       return `
       <li data-item-id="${post.id}" class="post">
         <div class="post-header">
@@ -56,7 +58,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
           ${post.description}
         </p>
         <p class="post-date">
-        ${post.createdAt}
+        ${commentTime}
         </p>
       </li>
       `;
@@ -72,7 +74,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
   // DONE: реализовать рендер постов из api
 
   /**
-   * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
+   * DONE: чтобы отформатировать дату создания поста в виде "19 минут назад"
    * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
    */
 
@@ -108,7 +110,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
         switchLikeApi({ token, postId, likedMode })
           .then((postFromApi) => {
             const postIndex = posts.findIndex(
-              (post) => post.id === postFromApi.id
+              (post) => post.id === postFromApi.id,
             );
             if (postIndex !== -1) {
               posts[postIndex] = postFromApi;
@@ -118,7 +120,7 @@ export function renderPostsPageComponent({ appEl, posts, token, user }) {
                 likesText = ` и еще ${postFromApi.likes.length - 1}`;
               }
               const updatePostEl = document.querySelector(
-                `[data-item-id="${postFromApi.id}"]`
+                `[data-item-id="${postFromApi.id}"]`,
               );
 
               updatePostEl.querySelector(".like-button").innerHTML = `
