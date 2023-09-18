@@ -620,7 +620,7 @@ function renderPostsPageComponent({ appEl, posts, token, user }) {
           </button>
           <p class="post-likes-text">
             Нравится: <strong>${
-              post.likes.length === 0 ? post.likes.length : post.likes[0].name
+              post.likes.length === 0 ? post.likes.length : post.likes[post.likes.length - 1].name
             }${likesText}</strong>
           </p>
         </div>
@@ -705,7 +705,7 @@ function renderPostsPageComponent({ appEl, posts, token, user }) {
             Нравится: <strong>${
               postFromApi.likes.length === 0
                 ? postFromApi.likes.length
-                : postFromApi.likes[0].name
+                : postFromApi.likes[postFromApi.likes.length - 1].name
             }${likesText}</strong>
             `;
             }
