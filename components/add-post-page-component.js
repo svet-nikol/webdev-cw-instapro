@@ -3,11 +3,9 @@ import { renderUploadImageComponent } from "./upload-image-component.js";
 import { addPostApi } from "../api.js";
 import { goToPage } from "../index.js";
 import { POSTS_PAGE } from "../routes.js";
+import sanitizeHtml from "sanitize-html";
 
-export function renderAddPostPageComponent({
-  appEl,
-  token,
-}) {
+export function renderAddPostPageComponent({ appEl, token }) {
   let imageUrl = "";
 
   const renderAddPostForm = () => {
@@ -65,6 +63,10 @@ export function renderAddPostPageComponent({
       setError("");
 
       const description = document.getElementById("description-input").value;
+      const descriptionSanitizedHTML = sanitizeHtml(description, {
+        allowedTags: [],
+        allowedAttributes: [],
+      });
 
       if (!description) {
         alert("Введите описание");
@@ -73,20 +75,19 @@ export function renderAddPostPageComponent({
       if (!imageUrl) {
         alert("Не выбрана фотография");
         return;
-      }
-      else {
+      } else {
         addPostApi({
-          description: description,
+          description: descriptionSanitizedHTML,
           imageUrl,
           token,
         })
-        .then(() => {
-          goToPage(POSTS_PAGE)
-        })
-        .catch((error) => {
-        console.warn(error);
-        setError(error.message);
-        });
+          .then(() => {
+            goToPage(POSTS_PAGE);
+          })
+          .catch((error) => {
+            console.warn(error);
+            setError(error.message);
+          });
       }
     }
 
