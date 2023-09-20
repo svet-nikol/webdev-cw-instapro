@@ -1,6 +1,6 @@
 // Замени на свой, чтобы получить независимый от других набор данных.
 // "боевая" версия инстапро лежит в ключе prod
-const personalKey = "prod";
+const personalKey = ":sveta-plaksina"; // :sveta-plaksina    prod
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
 
@@ -15,11 +15,41 @@ export function getPosts({ token }) {
       if (response.status === 401) {
         throw new Error("Нет авторизации");
       }
-
       return response.json();
     })
     .then((data) => {
       return data.posts;
+    });
+}
+
+export function getUserPosts({ token, userId }) {
+  return fetch(postsHost + "/user-posts/" + userId, {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      return data.posts;
+    });
+}
+
+export function switchLikeApi({ token, postId, likedMode }) {
+  const likesHost = `${postsHost}/${postId}/${likedMode ? "dislike" : "like"}`;
+  return fetch(likesHost, {
+    method: "POST",
+    headers: {
+      Authorization: token,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      return data.post;
     });
 }
 
@@ -64,6 +94,39 @@ export function uploadImage({ file }) {
   return fetch(baseHost + "/api/upload/image", {
     method: "POST",
     body: data,
+  }).then((response) => {
+    return response.json();
+  });
+}
+
+export function addPostApi({ description, imageUrl, token }) {
+  return fetch(postsHost, {
+    method: "POST",
+    body: JSON.stringify({
+      description: description,
+      // .replaceAll("&", "&amp;")
+      // .replaceAll("<", "&lt;")
+      // .replaceAll(">", "&gt;")
+      // .replaceAll('"', "&quot;"),
+      imageUrl,
+    }),
+    headers: {
+      Authorization: token,
+    },
+  }).then((response) => {
+    if (response.status === 400) {
+      throw new Error("Не прекреплена фотография или не заполнено описание");
+    }
+    return response.json();
+  });
+}
+
+export function deletePostApi({ token, postId }) {
+  return fetch(postsHost + "/" + postId, {
+    method: "DELETE",
+    headers: {
+      Authorization: token,
+    },
   }).then((response) => {
     return response.json();
   });
